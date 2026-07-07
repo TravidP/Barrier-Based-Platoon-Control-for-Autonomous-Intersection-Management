@@ -7,10 +7,11 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{url}
 
 \begin{document}
 
-\title{Paper Title}
+\title{Barrier-Based Platoon Control for Autonomous Intersection Management}
 
 \author{
 \IEEEauthorblockN{First Author}
@@ -33,33 +34,301 @@ email@example.com
 \maketitle
 
 \begin{abstract}
-Write a concise summary of the paper here. The abstract should briefly describe the problem, method, main results, and contribution.
+Previous theoretical work proves that distributed barrier-based platoon control can achieve safe and smooth crossing on a closed path with a single intersection. A previous BaIP CARLA study validates that this idea can reduce delay and energy consumption compared with a fully actuated signal controller, but also shows that transient safety remains a limitation at high density. This thesis extends the method to open-road bidirectional intersections by introducing a directed-lane conflict graph and a time-to-conflict barrier formulation. The goal is to make the barrier controller scalable to more realistic intersections while preserving smooth, communication-free, and energy-efficient crossing. The proposed controller will be evaluated in CARLA and/or SUMO under stochastic traffic arrivals and compared against signalized rule-based control and unsignalized heuristic baselines. Key performance indicators include throughput, delay, energy consumption, comfort, and safety violations.
 \end{abstract}
 
 \begin{IEEEkeywords}
-keyword one, keyword two, keyword three
+autonomous intersection management, barrier function, platoon control, time-to-conflict, bidirectional traffic, control barrier function
 \end{IEEEkeywords}
 
 \section{Introduction}
-Introduce the research background, motivation, problem statement, and main contributions.
+Urban intersections are critical bottlenecks in autonomous mobility systems because they introduce traffic delay, stop-and-go motion, additional energy consumption, and safety risks. Conventional intersection management mainly relies on signalized traffic control, where conflicting traffic streams are separated by green, yellow, and red phases. This structure is simple, safe, and computationally inexpensive, but it often forces vehicles to stop even when collision-free continuous crossing would be possible. In warehouse environments, autonomous mobile robots, unmanned ground vehicles, and autonomous vehicles often need to cross shared intersections smoothly, making signalized stopping behavior inefficient.
+
+Barrier-function-based control provides a promising alternative. Instead of assigning exclusive right-of-way using traffic lights, vehicles continuously adjust their speed before reaching the conflict point. The core idea is to ensure that two or more vehicles do not arrive at the same conflict region simultaneously. Previous work has demonstrated this principle on a closed-loop figure-eight track with a single conflict point, where a barrier controller enables smooth platoon formation and continuous intersection crossing. The CARLA evaluation showed that this approach can outperform a fully actuated system (FAS) controller in throughput, delay, and energy consumption, although transient safety at high traffic density remains a key limitation.
+
+This thesis builds on that foundation and extends barrier-based platoon control to open-road autonomous intersection management. The main challenge is that real intersections contain bidirectional lanes, multiple incoming streams, and multiple potential conflict pairs. Therefore, the controller must move beyond a single pairwise conflict-point formulation and handle structured multi-conflict interactions in a scalable way.
+
+The main contribution of this work is a directed-lane conflict graph combined with a time-to-conflict (TTC) barrier formulation for open-road intersections. Special attention is given to intersections involving one bidirectional road and one unidirectional road, as well as intersections where both roads are bidirectional.
 
 \section{Related Work}
-Summarize relevant prior work and explain how your work differs from existing approaches.
+
+\subsection{Signalized and Fully Actuated Intersection Control}
+Conventional signalized controllers separate conflicting traffic streams through phase-based right-of-way assignment. They are reliable, easy to implement, and computationally inexpensive, but they impose stopping and waiting behavior even when vehicles could safely cross continuously. Fully actuated signal control improves fixed-time signal control by reacting to vehicle demand. In the BaIP benchmark, the FAS controller uses stop lines, request loops, discharge loops, minimum green time, maximum green time, yellow time, and gap-out logic. This provides a strong rule-based baseline, but the phase structure still creates delay and unnecessary acceleration changes.
+
+\subsection{Autonomous Intersection Management}
+Autonomous intersection management (AIM) has been studied using centralized reservation, scheduling, decentralized coordination, graph-based modeling, optimization, and learning-based methods \cite{dresner2008,khayatian2020,lin2019,guney2020}. Centralized and reservation-based methods can explicitly coordinate conflict-free crossing, but they often require reliable communication infrastructure and a trusted coordinator. Decentralized and V2X-based approaches reduce some centralized computation, but they can still be affected by communication delay, packet loss, and coordination failures \cite{guan2020,wu2019}. These limitations motivate methods that can operate with local sensing and continuous speed adaptation.
+
+\subsection{Barrier-Based Control}
+Barrier-based control is the main line of this thesis. Previous theoretical work provides the foundation for distributed smooth-crossing platoon control on a closed path with a single unsignalized intersection. In that setting, vehicles move on a figure-eight path and repeatedly pass through the same conflict point. The controller combines a platoon-spacing term with a sensing barrier term acting on the two vehicles closest to the intersection. The goal is to achieve platoon convergence, inter-vehicle collision avoidance, smooth constant-speed crossing, and conflict-point collision avoidance.
+
+The BaIP simulation report evaluates a practical version of this idea in CARLA. The controller identifies the nearest approaching vehicle from each side of the conflict point, computes each vehicle's distance to the intersection, calculates the distance difference, and activates a speed correction when the distance difference becomes too small. The method was compared with a FAS traffic-light controller using throughput, delay, energy consumption, and safety violations as key performance indicators. The results showed clear efficiency advantages, but also revealed safety violations during the high-density transient phase before steady-state platooning was formed.
+
+\subsection{Research Gap}
+Existing work is mainly limited to a single closed-loop figure-eight intersection, one conflict point, two approaching directions, perfect distance estimation, limited transient safety under high traffic density, and no bidirectional-lane or multi-conflict road-network formulation. The missing step is therefore a scalable barrier-control formulation for open-road intersections with bidirectional lanes and multiple simultaneous conflict constraints.
 
 \section{Methodology}
-Describe the proposed method, system design, model, algorithm, or experimental setup.
 
-\subsection{Subsection Title}
-Add detailed explanations, equations, or implementation details here.
+\subsection{Road Conflict Zone}
+For each intersection, a set of conflict points is defined as
+\begin{equation}
+\mathcal{C}=\{c_1,c_2,\ldots,c_M\}.
+\end{equation}
+Each conflict point $c_m$ is associated with a set of incoming directed lanes,
+\begin{equation}
+\mathcal{L}(c_m).
+\end{equation}
+A vehicle is considered conflict-relevant if its planned path intersects the same conflict point and it is located inside the corresponding approach window. More specifically, two vehicles $i$ and $j$ are conflict-relevant if
+\begin{equation}
+l_i,l_j \in \mathcal{L}(c_m),
+\end{equation}
+and both vehicles are inside the approach window of conflict point $c_m$.
+
+For each vehicle $i$, the remaining distance to conflict point $c_m$ is denoted as
+\begin{equation}
+d_i^m.
+\end{equation}
+This distance is measured along the vehicle's planned path rather than by Euclidean distance, so that the controller reflects the actual driving distance to the conflict point.
+
+\subsection{Barrier Function Formulation}
+Instead of using only distance difference, this work adopts a time-to-conflict formulation. The time-to-conflict of vehicle $i$ with respect to conflict point $c_m$ is defined as
+\begin{equation}
+T_i^m=\frac{d_i^m}{\max(v_i,v_{\min})},
+\end{equation}
+where $d_i^m$ is the remaining distance of vehicle $i$ to conflict point $c_m$, $v_i$ is the current velocity of vehicle $i$, and $v_{\min}$ is a small positive lower bound used to avoid division by zero.
+
+For two conflicting vehicles $i$ and $j$, the safety margin is defined as
+\begin{equation}
+h_{ij}^m = |T_i^m-T_j^m|-T_{\text{safe}},
+\end{equation}
+where $T_{\text{safe}}$ is the minimum allowed time separation at the conflict point. The safety condition is therefore
+\begin{equation}
+h_{ij}^m \geq 0.
+\end{equation}
+This means that two conflicting vehicles are considered safe if their estimated arrival-time difference at the same conflict point is larger than the predefined safe time gap.
+
+The barrier function is activated when
+\begin{equation}
+h_{ij}^m < h_{\text{act}},
+\end{equation}
+where $h_{\text{act}}$ is the activation threshold. When the vehicles are far from conflict, no barrier correction is applied. When the predicted arrival-time gap becomes too small, the barrier correction becomes active.
+
+The control input of each vehicle is written as
+\begin{equation}
+u_i = u_i^{\text{headway}} + u_i^{\text{barrier}},
+\end{equation}
+where $u_i^{\text{headway}}$ is the nominal platoon or headway control input, and $u_i^{\text{barrier}}$ is the additional safety correction generated by the conflict-zone barrier function.
+
+The barrier correction is constructed as
+\begin{equation}
+u_i^{\text{barrier}}
+=
+\sum_{m\in \mathcal{C}_i}
+\sum_{j\in \mathcal{N}_i^m}
+w_{ij}^m \, \phi(h_{ij}^m),
+\end{equation}
+where $\mathcal{C}_i$ is the set of conflict points relevant to vehicle $i$, $\mathcal{N}_i^m$ is the set of conflicting vehicles with respect to conflict point $c_m$, and $w_{ij}^m$ is a priority or direction-dependent weight.
+
+The function $\phi(\cdot)$ is designed to become stronger when $h_{ij}^m$ becomes smaller. A simple formulation is
+\begin{equation}
+\phi(h_{ij}^m)=
+\begin{cases}
+-\dfrac{1}{h_{ij}^m}, & h_{ij}^m < h_{\text{act}},\\[6pt]
+0, & h_{ij}^m \geq h_{\text{act}}.
+\end{cases}
+\end{equation}
+This time-to-conflict formulation is more robust than using only distance difference, because two vehicles may have the same distance to the conflict point but different velocities. In that case, their collision risk is better described by arrival time rather than distance alone.
+
+\subsection{Bidirectional Lanes: Method Design}
+
+\subsubsection{Case A: One Road Bidirectional, One Road Unidirectional}
+For an intersection where one road is bidirectional and the other road is unidirectional, the bidirectional road is decomposed into two directed virtual lanes. Therefore, the physical intersection is represented as two local directed-lane conflict problems sharing the same physical conflict region.
+
+Let the bidirectional road contain two virtual lanes,
+\begin{equation}
+l_{NS}, \quad l_{SN},
+\end{equation}
+and let the unidirectional road contain one directed lane,
+\begin{equation}
+l_{EW}.
+\end{equation}
+The vehicle from the unidirectional lane $l_{EW}$ may face two possible conflicts:
+\begin{equation}
+(l_{EW},l_{NS}),
+\end{equation}
+and
+\begin{equation}
+(l_{EW},l_{SN}).
+\end{equation}
+
+Therefore, the barrier correction for the vehicle on the unidirectional lane should aggregate both possible pairwise barrier terms. One possible aggregation is the sum form,
+\begin{equation}
+u_{EW}^{\text{barrier}}
+=
+u_{EW,NS}^{\text{barrier}}
++
+u_{EW,SN}^{\text{barrier}}.
+\end{equation}
+Alternatively, a more conservative aggregation can be used:
+\begin{equation}
+u_{EW}^{\text{barrier}}
+=
+\max
+\left(
+u_{EW,NS}^{\text{barrier}},
+u_{EW,SN}^{\text{barrier}}\right).
+\end{equation}
+The sum aggregation is smoother because it combines all active barrier effects continuously. The max aggregation is more conservative and can be used when the safety-critical constraint should dominate the control correction.
+
+For this case, vehicles on the bidirectional road are controlled using standard pairwise barrier constraints with respect to the unidirectional approach. The unidirectional vehicle, however, must consider both possible conflicts because it shares the same physical conflict region with both directions of the bidirectional road. To prevent conflicting corrections and oscillatory yielding, a priority-weighted aggregation can be introduced. The weight $w_{ij}^m$ may depend on time-to-conflict, lane priority, queue length, or road hierarchy.
+
+\subsubsection{Case B: Both Roads Bidirectional}
+When both roads are bidirectional, the physical intersection is represented as a four-lane directed conflict graph. Each physical bidirectional road is decomposed into two directed virtual lanes. For a simple cross intersection, the four directed lanes can be denoted as
+\begin{equation}
+l_1,\ l_2,\ l_3,\ l_4.
+\end{equation}
+The conflict relation between directed lanes is represented by a binary conflict matrix,
+\begin{equation}
+A_{pq}
+=
+\begin{cases}
+1, & \text{if lane } l_p \text{ conflicts with lane } l_q,\\
+0, & \text{otherwise}.
+\end{cases}
+\end{equation}
+For a simple cross intersection, the conflict matrix can be written as
+\begin{equation}
+A=
+\begin{bmatrix}
+0 & 0 & 1 & 1\\
+0 & 0 & 1 & 1\\
+1 & 1 & 0 & 0\\
+1 & 1 & 0 & 0
+\end{bmatrix}.
+\end{equation}
+This formulation is useful because it scales the method from a single conflict pair to multiple directed conflict relations in a clean graph-based way.
+
+\paragraph{Step 1: Conflict Matrix Construction}
+The first step is to construct the conflict matrix $A$. Each element $A_{pq}$ indicates whether vehicles from lane $l_p$ and lane $l_q$ may occupy the same conflict region. If
+\begin{equation}
+A_{pq}=1,
+\end{equation}
+then pairwise barrier constraints need to be checked between the active vehicles on lanes $l_p$ and $l_q$. If
+\begin{equation}
+A_{pq}=0,
+\end{equation}
+then no barrier constraint is required between these two lanes.
+
+\paragraph{Step 2: Candidate Selection}
+For each directed lane, the closest vehicle to the conflict point is selected as the active candidate. For lane $l_p$, the active candidate is defined as
+\begin{equation}
+a_p = \operatorname*{arg\,min}_{i\in \mathcal{V}_{l_p}} d_i^c,
+\end{equation}
+where $\mathcal{V}_{l_p}$ is the set of vehicles on lane $l_p$, and $d_i^c$ is the remaining distance of vehicle $i$ to the corresponding conflict point. The active candidate set is then
+\begin{equation}
+\mathcal{A}=\{a_1,a_2,a_3,a_4\}.
+\end{equation}
+Only the selected candidates are used to construct local pairwise barrier constraints. This keeps the online computation small and avoids unnecessary constraints from vehicles that are still far from the intersection.
+
+\paragraph{Step 3: Pairwise Barrier Constraints}
+For every conflicting lane pair $(l_p,l_q)$ satisfying
+\begin{equation}
+A_{pq}=1,
+\end{equation}
+a pairwise barrier constraint is constructed between active vehicles $a_p$ and $a_q$. The time-to-conflict values are
+\begin{equation}
+T_{a_p}^m=\frac{d_{a_p}^m}{\max(v_{a_p},v_{\min})},
+\end{equation}
+and
+\begin{equation}
+T_{a_q}^m=\frac{d_{a_q}^m}{\max(v_{a_q},v_{\min})}.
+\end{equation}
+The corresponding safety margin is
+\begin{equation}
+h_{a_p a_q}^m
+=
+|T_{a_p}^m-T_{a_q}^m|
+-
+T_{\text{safe}}.
+\end{equation}
+The safety condition is
+\begin{equation}
+h_{a_p a_q}^m \geq 0.
+\end{equation}
+The barrier is activated when
+\begin{equation}
+h_{a_p a_q}^m < h_{\text{act}}.
+\end{equation}
+
+\paragraph{Step 4: Aggregated Barrier for Each Vehicle}
+Since each vehicle may be involved in multiple simultaneous conflicts, the final barrier correction is obtained by aggregating all active pairwise barrier terms. For vehicle $i$, the aggregated correction is
+\begin{equation}
+u_i^{\text{barrier}}
+=
+\sum_{m\in \mathcal{C}_i}
+\sum_{j\in \mathcal{N}_i^m}
+w_{ij}^m \phi(h_{ij}^m).
+\end{equation}
+A more conservative alternative is to use the strongest active constraint:
+\begin{equation}
+u_i^{\text{barrier}}
+=
+\max_{m,j}
+\left(
+w_{ij}^m \phi(h_{ij}^m)
+\right).
+\end{equation}
+The weighted-sum formulation improves smoothness, while the max-based formulation is more safety-critical. In dense traffic, the priority weight $w_{ij}^m$ can be designed based on
+\begin{equation}
+T_i^m,\quad T_j^m,\quad Q_l,\quad P_l,
+\end{equation}
+where $Q_l$ is the queue length of lane $l$, and $P_l$ is the priority level of the lane. This priority rule helps avoid deadlock and oscillatory yielding when multiple vehicles reach the intersection at similar times.
+
+\subsection{CBF-QP Safety Filter}
+For the final thesis formulation, a stronger and cleaner method is to implement the barrier correction as a local control barrier function quadratic program (CBF-QP) safety filter. Instead of directly adding a heuristic barrier correction, each vehicle computes the closest safe input to its nominal headway control input.
+
+For vehicle $i$, the optimization problem is
+\begin{equation}
+\min_{u_i}
+\quad
+|u_i-u_i^{\text{nom}}|^2,
+\end{equation}
+subject to
+\begin{equation}
+\dot{h}_{ij}+\alpha h_{ij}\geq 0,
+\quad
+\forall j\in \mathcal{N}_i,
+\end{equation}
+\begin{equation}
+u_{\min}\leq u_i\leq u_{\max},
+\end{equation}
+and
+\begin{equation}
+a_{\min}\leq a_i\leq a_{\max}.
+\end{equation}
+Here, $u_i^{\text{nom}}$ is the nominal headway or platoon control input, and the QP modifies it only when safety constraints are close to being violated. The term $\alpha>0$ determines how aggressively the system enforces the barrier constraint.
+
+This formulation converts the previous heuristic barrier correction into a formal safety-filter layer. The nominal controller is responsible for platoon formation and smooth driving, while the CBF-QP layer guarantees that the active time-to-conflict constraints remain safe. For intersections where both roads are bidirectional, the physical intersection is represented as a four-lane directed conflict graph. Each directed lane contributes one active leading candidate, and barrier constraints are constructed for all conflicting lane pairs. Since each vehicle may be involved in multiple simultaneous conflicts, its final safety correction is computed through weighted aggregation or, more rigorously, through the local CBF-QP safety filter. A priority rule based on time-to-conflict, lane queue length, and road hierarchy is introduced to prevent deadlock and oscillatory yielding.
 
 \section{Experiments}
-Describe the dataset, evaluation metrics, baseline methods, and experimental configuration.
+
+\subsection{Scenarios}
+The proposed method will be evaluated from simple to more realistic intersection layouts. The first scenario is the single-intersection figure-eight baseline, which reproduces the original closed-loop setting. The second scenario is an open-road single intersection with one bidirectional road and one unidirectional road. The third scenario is an open-road single intersection with two bidirectional roads. The fourth scenario is a two-intersection corridor, and the final scenario is a multi-intersection network.
+
+\subsection{Baselines}
+The proposed conflict-graph TTC barrier controller will be compared with four baselines: FAS signalized control, rule-based unsignalized priority control, the original distance-difference barrier controller, and the proposed method itself under different aggregation or CBF-QP settings. These baselines separate the effects of phase-based stopping, heuristic unsignalized yielding, original single-conflict barrier control, and the proposed multi-conflict formulation.
+
+\subsection{Key Performance Indicators}
+The evaluation uses the original key performance indicators and adds comfort-related metrics. The main indicators are throughput, average delay, total delay, energy consumption, safety violations, minimum TTC, acceleration root mean square (RMS), jerk RMS, stop count, and deadlock count. These metrics measure not only traffic efficiency and energy performance, but also transient safety, ride comfort, and robustness under high-density stochastic arrivals.
 
 \section{Results and Discussion}
-Present and analyze the results. Explain key findings, limitations, and observations.
+The results section will report the performance of the proposed controller against the selected baselines under increasing traffic density and different intersection structures. For the figure-eight baseline, the expected purpose is to confirm that the implementation is consistent with the previous barrier-control behavior. For the open-road cases, the key question is whether the directed-lane conflict graph preserves the smooth crossing advantage while reducing transient safety violations in bidirectional and multi-conflict settings.
+
+The discussion will focus on the tradeoff between smoothness and safety. The weighted-sum aggregation is expected to provide smoother speed profiles because it combines active constraints continuously, while the max-based aggregation and the CBF-QP safety filter are expected to be more conservative near conflict points. Safety violations, minimum TTC, acceleration RMS, jerk RMS, stop count, and deadlock count will be used to explain whether the controller improves high-density transient behavior without losing the delay and energy advantages observed in the earlier CARLA study.
 
 \section{Conclusion}
-Summarize the paper, restate the main contributions, and suggest possible future work.
+This thesis extends barrier-based platoon control from a closed-loop single-intersection figure-eight scenario to open-road autonomous intersection management with bidirectional and multi-conflict traffic flows. The proposed method introduces a directed-lane conflict graph and a time-to-conflict barrier formulation, allowing vehicles to reason about multiple conflict relations while preserving the smooth speed-adaptation idea of the original controller. A local CBF-QP safety filter is included as a cleaner formulation for enforcing active TTC constraints.
+
+Future work will implement and evaluate the proposed controller in CARLA and/or SUMO under stochastic traffic arrivals. The main evaluation will compare the proposed method with FAS signalized control, rule-based unsignalized priority control, and the original distance-difference barrier controller. The final goal is to improve throughput, delay, energy consumption, comfort, and safety in realistic autonomous intersection scenarios.
 
 \section*{Acknowledgment}
 Optional. Acknowledge funding, collaborators, or institutional support here.
@@ -68,3 +337,4 @@ Optional. Acknowledge funding, collaborators, or institutional support here.
 \bibliography{references}
 
 \end{document}
+
