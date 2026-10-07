@@ -1,0 +1,3 @@
+# Translation instructions
+
+Apply baoyu-translate refined mode. Read 01-analysis.md, ../decision-barrier-copy.md, and ../../translation_glossary_en_zh.md. Translate all 18 sections into concise Simplified Chinese for an academic presentation. Keep section numbers, numerical examples, symbols, units, and lane labels identical. Preserve all limitations and proposal-stage language. Translate figure labels along with prose. Do not add safety guarantees, reported performance, turning conflicts, or an implemented simulation. Produce an initial draft for independent critical review; do not modify the source, TeX, or geometry.

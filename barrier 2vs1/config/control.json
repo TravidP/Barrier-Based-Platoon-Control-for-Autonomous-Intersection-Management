@@ -1,0 +1,67 @@
+{
+  "status": "untuned_design_defaults_not_CARLA_validated",
+  "carla_version": "0.9.15",
+  "server_os_target": "Ubuntu 22.04 x86_64, packaged-release smoke test required",
+  "synchronous_mode": true,
+  "fixed_delta_seconds": 0.05,
+  "max_substep_delta_time": 0.01,
+  "max_substeps": 10,
+  "reference_speed_mps": 10.0,
+  "positive_speed_domain_mps": null,
+  "coordination_window_m": 60.0,
+  "headway_nominal": {
+    "kv_per_s": 0.5,
+    "kg_per_s2": 0.02,
+    "k_relative_per_s": 0.3
+  },
+  "cbf": {
+    "type": "ordered_signed_distance_HOCBF",
+    "distance_separation_m": 12.0,
+    "activation_margin_m": 8.0,
+    "k1_per_s": 0.5,
+    "k2_per_s": 0.5,
+    "qp_acceleration_lower_mps2": -3.0,
+    "qp_acceleration_upper_mps2": 2.0,
+    "soft_jerk_cost": 0.2,
+    "measured_tracking_bound_mps2": null
+  },
+  "longitudinal_pid": {
+    "kp_s_per_m": 0.25,
+    "ki_per_m": 0.03,
+    "kd_s2_per_m": 0.02,
+    "derivative_filter_tau_s": 0.15,
+    "integral_limit_m": 3.0,
+    "output_clip": [
+      -1.0,
+      1.0
+    ],
+    "feedforward": "calibrate_per_vehicle"
+  },
+  "lateral": {
+    "method": "pure_pursuit",
+    "lookahead_base_m": 5.0,
+    "lookahead_time_s": 0.5,
+    "wheelbase_m": null,
+    "steer_normalization": "derive_from_blueprint_and_single_vehicle_calibration"
+  },
+  "actuator_policy": "mutually_exclusive_throttle_brake; no target_velocity override after initialization",
+  "distance_event_policy": "signed unwrapped event distance through rear-clearance; do not reset to next lap at front crossing",
+  "barrier_reference": {
+    "point_xy_m": [
+      0,
+      0
+    ],
+    "distance": "signed longitudinal distance to the common center cross-section, not Euclidean norm",
+    "conflicting_branch_pairs": [
+      [
+        "EW",
+        "NS"
+      ],
+      [
+        "EW",
+        "SN"
+      ]
+    ],
+    "physical_lane_offset_m": 1.75
+  }
+}

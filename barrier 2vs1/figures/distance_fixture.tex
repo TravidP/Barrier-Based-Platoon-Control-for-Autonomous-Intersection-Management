@@ -1,0 +1,14 @@
+\begin{tikzpicture}[x=.8cm,y=.55cm,>=Latex]
+\draw[->,very thick,orange!80!black](5,0)--(-4,0);
+\draw[->,very thick,blue!70!black](-.15,4)--(-.15,-4);
+\draw[->,very thick,teal](.15,-4)--(.15,4);
+\node[fill=orange!80!black,text=white]at(4,0){E};
+\node[fill=blue!70!black,text=white]at(-.15,3){NS};
+\node[fill=teal,text=white]at(.15,-3){SN};
+\fill[red!75!black](0,0)circle[radius=.12];
+\node[above left,fill=white]at(-.25,.1){$C=(0,0)$};
+\node[above]at(2.5,0){$d_E=42$ m};
+\node[left]at(-.15,1.7){$d_{NS}=28$ m};
+\node[right]at(.15,-1.7){$d_{SN}=55$ m};
+\node[below]at(0,-4.3){$NS\prec E\qquad E\prec SN$};
+\end{tikzpicture}

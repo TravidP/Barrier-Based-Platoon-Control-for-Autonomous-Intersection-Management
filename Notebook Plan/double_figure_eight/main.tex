@@ -1,0 +1,73 @@
+% Build: latexmk -xelatex -interaction=nonstopmode main.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=23mm,headheight=15pt]{geometry}
+\usepackage[scheme=plain,fontset=fandol]{ctex}
+\usepackage{fontspec}
+\setmainfont{texgyrepagella}[Extension=.otf,UprightFont=*-regular,
+ BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\usepackage{amsmath,amssymb,booktabs,tabularx,longtable,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{enumitem,fancyhdr,xcolor,hyperref,needspace}
+\definecolor{navy}{HTML}{17334D}
+\definecolor{teal}{HTML}{007E87}
+\definecolor{amber}{HTML}{BA7216}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=teal,citecolor=teal,pdftitle={Double Figure-Eight Closed-Loop Intersection Control / 双八字双路口闭环控制}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=*}
+\setlength{\emergencystretch}{3em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newif\ifChinese
+\newcommand{\bi}[2]{\ifChinese#2\else#1\fi}
+\renewcommand{\contentsname}{Contents / 目录}
+\renewcommand{\figurename}{\bi{Figure}{图}}
+\renewcommand{\tablename}{\bi{Table}{表}}
+\renewcommand{\partname}{\bi{Part}{部分}}
+\newcommand{\bisection}[2]{\Needspace{7\baselineskip}\section{\bi{#1}{#2}}}
+\newcommand{\bisubsection}[2]{\Needspace{6\baselineskip}\subsection{\bi{#1}{#2}}}
+\newcommand{\status}[2]{\begin{quote}\color{navy}\small\bi{#1}{#2}\end{quote}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bi{Double figure-eight research design}{双八字双路口研究设计}}
+\fancyhead[R]{\small\bi{Proposal / not experimental results}{研究方案 / 非实验结果}}
+\fancyfoot[C]{\thepage}
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{24mm}
+{\color{teal}\large RESEARCH DESIGN \quad 研究设计\par}
+\vspace{10mm}
+{\color{navy}\Huge\bfseries From One Figure-Eight to\par Two Coupled Intersections\par}
+\vspace{10mm}
+{\LARGE\bfseries 从单八字闭环到双路口耦合\par}
+\vspace{8mm}
+{\large Distance-barrier control, scenario layout and experimental configuration\par}
+{\large 距离 barrier 控制、场景布局与实验配置\par}
+\vfill
+Based on Martijn Westerhof's BSc report, student ID s5148146.\par
+基于 Martijn Westerhof 的本科报告整理；完整英文版在前，完整中文版在后。\par
+\vspace{5mm}
+\textbf{Status / 状态：} Document and experiment design only. No new CARLA experiments or safety proof.\par
+本文件为研究设计，不包含新增 CARLA 实验或已完成的安全证明。\par
+\vspace{5mm}
+Prepared / 整理日期：2026-10-07
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\tableofcontents
+\clearpage
+\Chinesefalse
+\part{Complete English Version}
+\input{report_body}
+\clearpage
+\Chinesetrue
+\part{完整中文版}
+\input{report_body}
+\clearpage
+\nocite{carla}
+\renewcommand{\refname}{References / 参考文献}
+\addcontentsline{toc}{section}{References / 参考文献}
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

@@ -1,0 +1,55 @@
+Barrier 2vs1 — 统一路口中心距离 barrier 修订版
+=================================
+先阅读 report_zh.pdf（20 页中文报告）。
+本包只含离线几何、空间冲突需求扫描与局部 QP 算例。
+没有 .xodr、CARLA 安装、完整闭环控制程序或 CARLA 实测结果。
+
+从仓库根目录复算：
+  python3 'barrier 2vs1/scripts/analyze_design.py'
+  cd 'barrier 2vs1'
+  latexmk -xelatex -interaction=nonstopmode -halt-on-error report_zh.tex
+
+Python 仅使用标准库（建议 Python 3.9+）。
+编译需要 XeLaTeX、ctex/Fandol、TikZ、BibTeX、latexmk。
+可加 -outdir=/tmp/barrier-distance-build，将编译中间文件放在临时目录。
+
+主要文件：
+  config/map.json              几何、车辆数与距离阈值
+  config/control.json          待标定距离 HOCBF/PID 参数
+  config/experiments.json      实验阶段、对照与验收条件
+  scripts/analyze_design.py    离线检查与矢量图生成
+  results/design_summary.json  几何、空间扫描、初始化、QP 与目标队形结果
+  results/route_samples.csv    路线弧长及坐标（不是 OpenDRIVE）
+  results/count_sweep.csv      车辆数比较
+  results/length_sweep.csv     道路长度比较
+  results/window_sweep.csv     协调窗口比较
+  results/initial_positions.csv  24 车局部距离可行初态
+  results/cluster_target.csv   八组三车的非均匀空间目标
+  figures/*.svg               参数化道路矢量图
+  figures/*.tex               可编辑的 LaTeX 图
+
+本次结果：
+  路线积分长度 1500 m，主实验 24 辆，参考速度 10 m/s。
+  所有 barrier 使用中心 C=(0,0) 的有符号纵向距离；不是欧氏范数。
+  三个方向协调窗口各 60 m，距离分离阈值 12 m。
+  车道偏移保留在实体几何中，占用半长统一保守取 5.65 m。
+  三车例为 d_E=42、d_NS=28、d_SN=55 m；初始 h=(2,1) m。
+  24 车均匀分布空间扫描：双距离触发需求约 93.2%；10 车为 0。
+  此需求率不是碰撞率、QP 活跃率或实际仿真通过率。
+  均匀 24 车会出现初始距离约束不满足，不可直接当安全初始化。
+  八组三车，参考点间距按 (20,20,147.5) m 重复：
+  两组交叉关系相对共同中心的最小事件空间位移差为 20.75 m、24.25 m。
+  这是理想等速目标的空间可行性，不是收敛证明。
+  18 辆为中等负载，30/36 辆用于压力实验。
+
+验证边界：
+  几何为 G1（切向连续，曲率不连续）；导入前需缓和段与重新校核。
+  道路带抽样步长 0.5/0.25 m，容差 5 mm；排除局部 10 m 邻域
+  与中央预期 16 x 16 m 路口区域。不是连续几何形式化证明。
+  距离占用检查采用示例 4.8 x 2.0 m 车身，须读取实际车型复核。
+  局部 QP 已检查 KKT 与 50 ms 保持输入回放，不是完整车队仿真。
+  未完成执行器标定、扰动恢复、离散闭环安全证明或无制动收敛验证。
+
+修改配置后必须复算并审阅报告正文。生成表格/宏会自动更新，
+但手写推荐、24 车初始化及目标队形算例不会自动重写为任意配置。
+未来 CARLA 接入、建图和执行顺序见报告第 13–18 节。

@@ -1,0 +1,92 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "vehicle_blueprint_candidate": "vehicle.tesla.model3",
+  "initialization": "24-car nonuniform distance-feasible fixture plus rejection-screened perturbations; equal-spacing resonance is a stress fixture, not a safe initial set",
+  "phases": [
+    "single_vehicle_tracking",
+    "three_vehicle_two_conflict_fixture",
+    "18_car_moderate",
+    "24_car_primary",
+    "30_36_car_stress",
+    "distance_window_sweep",
+    "length",
+    "speed",
+    "localization_noise"
+  ],
+  "small_fleet_counts": [
+    2,
+    4
+  ],
+  "perturbations": {
+    "position_jitter_m": [
+      0,
+      2,
+      5
+    ],
+    "speed_jitter_mps": [
+      0,
+      0.5,
+      1.0
+    ],
+    "single_vehicle_speed_drop_mps": 1.0
+  },
+  "noise_later": {
+    "position_std_m": [
+      0.1,
+      0.3,
+      0.5
+    ],
+    "delay_s": [
+      0.05,
+      0.1,
+      0.2
+    ]
+  },
+  "maximum_laps": 15,
+  "steady_observation_laps": 3,
+  "steady_thresholds": {
+    "speed_rms_error_mps": 0.3,
+    "speed_max_error_mps": 0.8,
+    "brake_threshold": 0.01,
+    "brake_fraction_max": 0.01,
+    "stop_speed_mps": 0.5,
+    "stop_duration_s": 1.0,
+    "acceleration_rms_mps2": 0.2,
+    "jerk_p95_mps3": 1.0,
+    "distance_barrier_min_m": 0.0,
+    "hocbf_psi1_min_mps": 0.0
+  },
+  "fail_on": [
+    "collision",
+    "wrong_route",
+    "vehicle_removed",
+    "QP_infeasible",
+    "simulator_teleport",
+    "unsafe_occupancy_overlap"
+  ],
+  "baselines": [
+    "headway_only",
+    "pairwise_distance_heuristic",
+    "joint_distance_HOCBF_QP"
+  ],
+  "notes": "No experiments executed in CARLA. Thresholds are prespecified research criteria, not measured performance.",
+  "main_vehicle_count": 24,
+  "moderate_vehicle_count": 18,
+  "stress_vehicle_counts": [
+    30,
+    36
+  ],
+  "nonuniform_reference": {
+    "groups": 8,
+    "vehicles_per_group": 3,
+    "intra_group_reference_point_spacing_m": 20,
+    "inter_group_reference_point_spacing_m": 147.5,
+    "status": "spatially feasible equal-speed construction, not proven reachable"
+  }
+}

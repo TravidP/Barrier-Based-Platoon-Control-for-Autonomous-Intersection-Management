@@ -1,0 +1,192 @@
+{
+  "status": "geometric_checks_only_not_CARLA_validated",
+  "main": {
+    "aspect_ratio_R_over_H": 2,
+    "length_m": 4694.8,
+    "R_m": 613.698536131241,
+    "H_m": 306.8492680656205,
+    "intersection_centers_xy_m": [
+      [
+        -306.8492680656205,
+        0
+      ],
+      [
+        306.8492680656205,
+        0
+      ]
+    ],
+    "event_ids": [
+      "e1",
+      "e2",
+      "e3",
+      "e4"
+    ],
+    "event_junction_branch": [
+      "J2/A",
+      "J1/A",
+      "J1/B",
+      "J2/B"
+    ],
+    "event_theta_rad": [
+      1.0471975511965976,
+      2.0943951023931953,
+      4.1887902047863905,
+      5.235987755982989
+    ],
+    "event_arc_length_m": [
+      722.6706703125836,
+      1624.7293296873904,
+      3070.0706703125943,
+      3972.129329687391
+    ],
+    "consecutive_event_distances_m": [
+      902.0586593748068,
+      1445.3413406252039,
+      902.0586593747967,
+      1445.341340625193
+    ],
+    "nominal_event_travel_times_s": [
+      108.24703912497681,
+      173.44096087502444,
+      108.24703912497559,
+      173.44096087502314
+    ],
+    "minimum_centerline_radius_m": 32.314915544619204,
+    "max_kinematic_lateral_acceleration_at_30kmh_mps2": 2.148990435966271,
+    "nominal_lap_time_s": 563.376,
+    "arc_integration_samples": 120000,
+    "crossings_per_lap": 4,
+    "proof_note": "Equal cosines give theta and 2pi-theta; equality in y gives sin(3theta)=0. Excluding closure, exactly two distinct crossings."
+  },
+  "geometry_diagnostics": [
+    {
+      "aspect_ratio_R_over_H": 1.5,
+      "length_m": 4694.8,
+      "R_m": 500.0761565787715,
+      "H_m": 333.38410438584765,
+      "intersection_centers_xy_m": [
+        [
+          -250.03807828938574,
+          0
+        ],
+        [
+          250.03807828938574,
+          0
+        ]
+      ],
+      "event_ids": [
+        "e1",
+        "e2",
+        "e3",
+        "e4"
+      ],
+      "event_junction_branch": [
+        "J2/A",
+        "J1/A",
+        "J1/B",
+        "J2/B"
+      ],
+      "event_theta_rad": [
+        1.0471975511965976,
+        2.0943951023931953,
+        4.1887902047863905,
+        5.235987755982989
+      ],
+      "event_arc_length_m": [
+        740.1658983533808,
+        1607.234101646582,
+        3087.5658983533976,
+        3954.634101646596
+      ],
+      "consecutive_event_distances_m": [
+        867.0682032932012,
+        1480.3317967068156,
+        867.0682032931982,
+        1480.331796706785
+      ],
+      "nominal_event_travel_times_s": [
+        104.04818439518414,
+        177.63981560481787,
+        104.04818439518377,
+        177.6398156048142
+      ],
+      "minimum_centerline_radius_m": 20.20848942294261,
+      "max_kinematic_lateral_acceleration_at_30kmh_mps2": 3.436399574012914,
+      "nominal_lap_time_s": 563.376,
+      "arc_integration_samples": 120000,
+      "crossings_per_lap": 4,
+      "proof_note": "Equal cosines give theta and 2pi-theta; equality in y gives sin(3theta)=0. Excluding closure, exactly two distinct crossings."
+    },
+    {
+      "aspect_ratio_R_over_H": 3,
+      "length_m": 4694.8,
+      "R_m": 776.0917546663179,
+      "H_m": 258.6972515554393,
+      "intersection_centers_xy_m": [
+        [
+          -388.04587733315896,
+          0
+        ],
+        [
+          388.04587733315896,
+          0
+        ]
+      ],
+      "event_ids": [
+        "e1",
+        "e2",
+        "e3",
+        "e4"
+      ],
+      "event_junction_branch": [
+        "J2/A",
+        "J1/A",
+        "J1/B",
+        "J2/B"
+      ],
+      "event_theta_rad": [
+        1.0471975511965976,
+        2.0943951023931953,
+        4.1887902047863905,
+        5.235987755982989
+      ],
+      "event_arc_length_m": [
+        693.038214651362,
+        1654.361785348637,
+        3040.43821465137,
+        4001.7617853486117
+      ],
+      "consecutive_event_distances_m": [
+        961.3235706972752,
+        1386.0764293027328,
+        961.3235706972418,
+        1386.0764293027505
+      ],
+      "nominal_event_travel_times_s": [
+        115.35882848367301,
+        166.32917151632793,
+        115.35882848366901,
+        166.32917151633006
+      ],
+      "minimum_centerline_radius_m": 57.578539241963455,
+      "max_kinematic_lateral_acceleration_at_30kmh_mps2": 1.2060820812528201,
+      "nominal_lap_time_s": 563.376,
+      "arc_integration_samples": 120000,
+      "crossings_per_lap": 4,
+      "proof_note": "Equal cosines give theta and 2pi-theta; equality in y gives sin(3theta)=0. Excluding closure, exactly two distinct crossings."
+    }
+  ],
+  "matched_target_spacing_m": [
+    46.02745098039216,
+    38.48196721311476,
+    33.06197183098592,
+    28.98024691358025
+  ],
+  "checks": {
+    "regular_centerline": true,
+    "two_crossing_pairs": true,
+    "arc_segments_sum_to_length": true,
+    "approach_windows_20_40_60m_do_not_overlap": true,
+    "reference_and_double_density_match": true
+  }
+}

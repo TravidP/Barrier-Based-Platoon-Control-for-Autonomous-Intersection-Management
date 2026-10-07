@@ -1,0 +1,37 @@
+
+
+\subsection{Communication-Free Distributed Barrier Controller}
+\label{Barrier based vehicle controller}
+The primary function of the evaluated communication-free distributed barrier control algorithm is to adjust vehicle speed, to ensure that they never arrive simultaneously at the conflict point. 
+
+\subsubsection{Identifying Approaching Conflict Pairs}
+\label{Conflict Pair Identification}
+The vehicle specific speed adjustment can only be applied if the correct conflict pair is identified. Therefore, the Barrier Control algorithm identifies the conflict pair. A vehicle is considered a candidate for the conflict pair if its Geodesic distance to the conflict point is within the conflict point and the predefined approach window \(d_\text{approach}\)(m). Per conflict point, multiple arriving candidates can be present within the approach window. Therefore, the algorithm sorts the candidates based on the distance to the conflict point. From this sorted list, the vehicle with the least distance to the conflict point per side is listed as candidate 1 (c1) or candidate 2 (c2), where the index (1 or 2) corresponds to the approach side.
+
+\subsubsection{Computing Vehicle Distance to Conflict Point}
+For each of the identified candidates, \(i \in\{1,2\}\), the distance to the conflict point is calculated. For candidate i, the distance to the conflict point \(d_\text{cross,i}\)(m), is computed by subtracting the actual position \(s_\text{actual,i}\)(m) from the position of the conflict point, \(s_i\)(m), and follows equation~\ref{dcross}\begin{equation}
+\label{dcross}
+    d_\text{cross,i}= s_i - s_\text{actual,i}.
+\end{equation}
+The value of \(d_\text{cross,i}\) from both candidates is used to calculate the relative difference in approaching distance \(\Delta d\)(m) between the candidates, which follows equation~\ref{diff}\begin{equation}
+\label{diff}
+    \Delta d = d_\text{cross,1} - d_\text{cross,2}.
+\end{equation}
+If the absolute value of \(\Delta d\) falls below the barrier activation distance \(d_\text{activation}\)(m), a gradient \(\nabla\)(-) is calculated~\ref{grad}
+\begin{equation}
+\label{grad}
+\nabla = \frac{-1}{\Delta d}.
+\end{equation}
+The gradient is structured to provide a positive speed correction for the candidate closest to the intersection and a similar, but negative correction for the candidate further away from the intersection.  Furthermore, \(\nabla\) is scaled to provide larger corrections for candidates arriving with a smaller gap at the conflict point, which is represented by a smaller \(\Delta d\). 
+
+\subsubsection{Barrier Speed Correction Law}
+\label{BArrier law}
+If the calculated gradient is non zero, the gradient is converted into a speed correction, \(u_\text{barrier}\) (km/h), which follows equation~\ref{Ubarrier}
+\begin{equation}
+\label{Ubarrier}
+u_\text{barrier} = K_\text{barrier} \cdot \nabla,
+\end{equation}
+with the barrier gain \(K_\text{barrier}\)(km/h). The barrier gain should be tuned significantly higher than the gains of the later described headway controller, section~\ref{Headway Control}, to prevent domination of the barrier control actions by the headway controller.  
+
+
+

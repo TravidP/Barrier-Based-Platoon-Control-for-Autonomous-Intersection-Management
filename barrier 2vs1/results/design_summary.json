@@ -1,0 +1,238 @@
+{
+  "revision": "common_junction_center_distance_barrier",
+  "status": "offline geometry + spatial demand sweep + local HOCBF algebra; no CARLA simulation",
+  "analytic_length_m": 1500.0,
+  "shape": {
+    "leg_m": 500.0,
+    "theta_rad": 1.0275813346409923,
+    "NW_radius_m": 73.96770381616732,
+    "NE_radius_m": 74.48912771013828
+  },
+  "min_radius_m": 51.80317532810163,
+  "min_straight_m": 62.16381039372195,
+  "geometry": {
+    "closure_error_m": 1.4077974125646585e-13,
+    "heading_error_rad": 1.133107779529596e-15,
+    "crossings_xy": [
+      [
+        -1.75,
+        0.0
+      ],
+      [
+        1.75,
+        -0.0
+      ]
+    ],
+    "nonlocal_strip_overlap_count": 0,
+    "min_nonlocal_centerline_distance_outside_junction_m": 3.499999999999928,
+    "strip_test_tolerance_m": 0.005,
+    "method": "sampled segments; 10 m local arc exclusion; central 16x16 m junction exclusion",
+    "curvature_continuous": false,
+    "continuity": "G1: exact position and heading continuity, curvature jumps at primitive joins"
+  },
+  "refined_geometry": {
+    "closure_error_m": 1.4077974125646585e-13,
+    "heading_error_rad": 1.133107779529596e-15,
+    "crossings_xy": [
+      [
+        -1.75,
+        0.0
+      ],
+      [
+        1.75,
+        0.0
+      ]
+    ],
+    "nonlocal_strip_overlap_count": 0,
+    "min_nonlocal_centerline_distance_outside_junction_m": 3.499999999999928,
+    "strip_test_tolerance_m": 0.005,
+    "method": "sampled segments; 10 m local arc exclusion; central 16x16 m junction exclusion",
+    "curvature_continuous": false,
+    "continuity": "G1: exact position and heading continuity, curvature jumps at primitive joins"
+  },
+  "events": [
+    {
+      "reference": "C",
+      "branch": "EW",
+      "s": 1.75
+    },
+    {
+      "reference": "C",
+      "branch": "NS",
+      "s": 500.0
+    },
+    {
+      "reference": "C",
+      "branch": "SN",
+      "s": 1000.0
+    }
+  ],
+  "primitives": [
+    {
+      "x": 1.75,
+      "y": 0.0,
+      "heading": 3.141592653589793,
+      "s": 0.0,
+      "length": 3.5,
+      "curvature": 0.0,
+      "name": "central_EW_c1_c2"
+    },
+    {
+      "x": -1.75,
+      "y": 4.286263797015736e-16,
+      "heading": 3.141592653589793,
+      "s": 3.5,
+      "length": 73.96770381616732,
+      "curvature": 0.0,
+      "name": "NW_depart_W"
+    },
+    {
+      "x": -75.71770381616732,
+      "y": 9.487057551576449e-15,
+      "heading": 3.141592653589793,
+      "s": 77.46770381616732,
+      "length": 348.5645923676654,
+      "curvature": -0.013519413857773794,
+      "name": "NW_outer_270"
+    },
+    {
+      "x": -1.7499999999999858,
+      "y": 73.9677038161674,
+      "heading": -1.5707963267948957,
+      "s": 426.0322961838327,
+      "length": 73.96770381616732,
+      "curvature": 0.0,
+      "name": "NW_approach_NS"
+    },
+    {
+      "x": -1.7499999999999156,
+      "y": 8.526512829121202e-14,
+      "heading": -1.5707963267948957,
+      "s": 500.00000000000006,
+      "length": 62.16381039372195,
+      "curvature": 0.0,
+      "name": "south_depart_NS"
+    },
+    {
+      "x": -1.7499999999998566,
+      "y": -62.16381039372187,
+      "heading": -1.5707963267948957,
+      "s": 562.163810393722,
+      "length": 53.231976042292,
+      "curvature": -0.019303835984307523,
+      "name": "south_flare_R"
+    },
+    {
+      "x": -26.776587664050616,
+      "y": -106.50998640861002,
+      "heading": -2.5983776614358876,
+      "s": 615.395786436014,
+      "length": 269.20842712797213,
+      "curvature": 0.019303835984307523,
+      "name": "south_bulb_L"
+    },
+    {
+      "x": 26.77658766405102,
+      "y": -106.50998640860995,
+      "heading": 2.59837766143589,
+      "s": 884.6042135639861,
+      "length": 53.231976042292,
+      "curvature": -0.019303835984307523,
+      "name": "south_return_R"
+    },
+    {
+      "x": 1.7500000000001457,
+      "y": -62.16381039372185,
+      "heading": 1.5707963267948981,
+      "s": 937.8361896062781,
+      "length": 62.16381039372195,
+      "curvature": 0.0,
+      "name": "south_approach_SN"
+    },
+    {
+      "x": 1.7500000000000528,
+      "y": 9.947598300641403e-14,
+      "heading": 1.5707963267948981,
+      "s": 1000.0000000000001,
+      "length": 74.48912771013828,
+      "curvature": 0.0,
+      "name": "NE_depart_N"
+    },
+    {
+      "x": 1.7499999999999416,
+      "y": 74.48912771013838,
+      "heading": 1.5707963267948981,
+      "s": 1074.4891277101383,
+      "length": 351.0217445797235,
+      "curvature": -0.01342477796076938,
+      "name": "NE_outer_270"
+    },
+    {
+      "x": 76.2391277101383,
+      "y": 2.1316282072803006e-13,
+      "heading": -3.1415926535897922,
+      "s": 1425.5108722898617,
+      "length": 74.48912771013828,
+      "curvature": 0.0,
+      "name": "NE_approach_EW"
+    }
+  ],
+  "cluster_target": {
+    "groups": 8,
+    "group_size": 3,
+    "intra_group_spacing_m": 20.0,
+    "inter_group_spacing_m": 147.5,
+    "min_spatial_offset_by_pair_EW_SN_EW_NS_m": [
+      20.75,
+      24.25
+    ],
+    "status": "equal-speed spatial construction; not a convergence result"
+  },
+  "baseline": {
+    "N": 24,
+    "speed_mps": 10.0,
+    "spacing_m": 62.5,
+    "window_m": 60.0,
+    "geometry_stress": {
+      "length_m": 1500.0,
+      "N": 24,
+      "spacing_m": 62.5,
+      "window_m": 60.0,
+      "mean_vehicles_in_three_windows": 2.88,
+      "same_EW_two_windows_pct": 93.16666666666667,
+      "same_EW_two_distance_triggers_pct": 93.16666666666667,
+      "at_least_one_distance_trigger_pct": 93.16666666666667,
+      "any_lane_two_candidates_pct": 0.0,
+      "min_distance_difference_EW_SN_m": 1.7499999999998863,
+      "min_distance_difference_EW_NS_m": 1.7499999999999432
+    }
+  },
+  "fixture": {
+    "role_ids": [
+      23,
+      7,
+      15
+    ],
+    "min_route_spacing_m": 38.75,
+    "h1_m": 2.0,
+    "h2_m": 1.0,
+    "psi1_mps": [
+      1.0,
+      0.5
+    ],
+    "nominal_acceleration_mps2": [
+      1,
+      0,
+      2
+    ],
+    "optimal_acceleration_mps2": [
+      1.0833333333333333,
+      0.5833333333333333,
+      1.3333333333333333
+    ],
+    "kkt_multipliers": [
+      0.5833333333333333,
+      0.6666666666666667
+    ]
+  }
+}

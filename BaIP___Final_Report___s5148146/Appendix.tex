@@ -1,0 +1,64 @@
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+\subsection*{Appendix A}
+\addcontentsline{toc}{subsection}{Appendix A}
+
+In the preparation of this report, generative artificial intelligence (AI) tools were used in a
+supportive role. Specifically, Claude Sonnet 4.6 (Anthropic) was consulted to assist with language
+refinement, structural suggestions, and clarification of technical explanations. The tool was used to improve readability, coherence, and academic tone, as well as to support the
+drafting and revision of text sections, and debugging of coding tasks.\\\\
+No AI tools were used to generate original research data, perform analyses, make design
+decisions, or draw conclusions. All technical content, interpretations, results, and conclusions presented in this report are the sole responsibility of the author. All sources were independently selected, verified, and cited by the author in accordance with
+academic standards.\\\\
+The use of generative AI was limited to support functions and was conducted in line with
+the University of Groningen’s guidelines on the responsible use of artificial intelligence in
+education and research.
+\subsection*{Appendix B}
+\addcontentsline{toc}{subsection}{Appendix B}
+
+\begin{table}[H]
+\caption{Simulation Configuration and Controller Parameters}
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Group} & \textbf{Parameter} & \textbf{Value} \\
+\midrule
+Longitudinal Controller & $K_p$ & 0.5 \\
+Longitudinal Controller & $K_I$ & 0.25 \\
+Longitudinal Controller & $K_d$ & 0.02 \\
+\midrule
+Headway Controller & $K_p$ & 3.5 \\
+Headway Controller & $K_d$ & 1.0 \\
+Headway Controller & Headway Alpha ($\alpha_\text{headway}$) & 0.9 \\
+
+\midrule
+Barrier Controller & $K_{\text{barrier}}$ & 25.0 \\
+Barrier Controller & Activation Distance & 10 m \\
+Barrier Controller & Approach Window & 20 m \\
+\midrule
+FAS Controller & Stop Line Distance & 12.0 m \\
+FAS Controller  & Approach Window (\(d_\text{approach}\)) & 50.0 m \\
+FAS Controller & Reaction Time ($t_r$) & 1.0 s \\
+FAS Controller  & Max Deceleration ($a_{off}$) & 2.5 m/s$^2$ \\
+FAS Controller & Queue Start-up Lost Time ($t_{\text{away}}$) & 2.0 s \\
+FAS Controller & Discharge Headway Peak ($t_{\text{follow}}$) & 2.5 s/vehicle \\
+FAS Controller & Maximum yellow time ($t_{\text{ymax}}$) & 1.0 s \\
+FAS Controller & Maximum allowed time gap($t_{\text{gap}}$) & 4.0 s \\
+FAS Controller & Average Vehicle Length ($L_{\text{veh}}$) & 5.0 m \\
+FAS Controller & Buffer Gap Between Cars ($d_{\text{gap}}$) & 1.0 m \\
+FAS Controller & Stop-line to Upstream Loop Distance ($d$) & 30.0 m \\
+FAS Controller & Request Loop Length ($L_{\text{request}}$) & 10.0 m \\
+FAS Controller & Discharge Loop  Length ($L_{\text{loop}}$) & 5.0 m \\
+FAS Controller & yellow-time (\(t_y\)) & 4 s \\
+FAS Controller & minimum green-time (\(t_\text{gmin}\)) & 12 s \\
+FAS Controller & maximum green-time (\(t_\text{gmax}\)) & 45 s \\
+FAS Controller & gap-out threshold (\(t_\text{go}\)) & 3.4 s \\
+\midrule
+Energy Consumption & Acceleration Alpha ($\alpha_\text{acceleration}$) & 0.5 \\
+\midrule
+Key Performance Indicator & Safety violation distance  & 5 m\\
+Key Performance Indicator & Free flow lap time (\(t_\text{ideal}\)) & 281.78s\\
+\bottomrule
+\end{tabular}
+\label{tab:simulation_parameters}
+\end{table}

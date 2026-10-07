@@ -1,0 +1,97 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{fix-cm}
+\usepackage[fontset=fandol]{ctex}
+\xeCJKsetup{CJKglue=\hskip 0pt}
+\usepackage{fontspec}
+\setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,
+ BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\usepackage{amsmath,amssymb,booktabs,array,tikz,pgfplots}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\pgfplotsset{compat=1.18}
+\definecolor{Navy}{HTML}{17334D}
+\definecolor{Ink}{HTML}{263C4C}
+\definecolor{Muted}{HTML}{617789}
+\definecolor{Teal}{HTML}{007E87}
+\definecolor{Blue}{HTML}{326FC0}
+\definecolor{Amber}{HTML}{BA7216}
+\definecolor{Purple}{HTML}{8557AD}
+\definecolor{Red}{HTML}{B63E4A}
+\definecolor{Road}{HTML}{EEF1F4}
+\definecolor{Rule}{HTML}{D7E0E7}
+\setbeamercolor{normal text}{fg=Ink,bg=white}
+\setbeamercolor{frametitle}{fg=Navy}
+\setbeamercolor{structure}{fg=Teal}
+\setbeamercolor{alerted text}{fg=Red}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{frametitle}{\vbox to 12mm{\vfil\hbox{\strut\insertframetitle}\vskip2mm}}
+\setbeamertemplate{footline}{\hspace{8mm}\textcolor{Muted}{\fontsize{6.5}{8}\selectfont\bi{DECISION-BARRIER FRAMEWORK}{决策屏障框架}}\hfill\textcolor{Muted}{\fontsize{7}{8}\selectfont\insertframenumber\,/\,18}\hspace{8mm}\vspace{2.5mm}}
+\setbeamertemplate{itemize item}{\color{Teal}\small\textbullet}
+\setlength{\parskip}{2mm}
+\newcommand{\bi}[2]{\ifChinese#2\else#1\fi}
+\newcommand{\lead}[2]{\par{\color{Teal}\large\bi{#1}{#2}\par}\vspace{1mm}}
+\newcommand{\srcnote}[2]{\par{\color{Muted}\scriptsize\bi{#1}{#2}\par}}
+\newcommand{\warn}[2]{\par{\color{Red}\small\bi{#1}{#2}\par}}
+\newcommand{\sect}[2]{\par{\color{Navy}\bfseries\bi{#1}{#2}\par}}
+\newcommand{\gap}{\par\vspace{2mm}}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\tikzset{>=Latex,
+ every node/.style={font=\small,text=Ink},
+ arr/.style={-{Latex[length=2mm]},thick,draw=Muted},
+ lane/.style={-{Latex[length=2mm]},line width=1.1pt},
+ dot/.style={circle,fill=white,draw=Red,thick,inner sep=1.3pt},
+ stage/.style={draw=Rule,fill=white,minimum height=11mm,align=center,text width=26mm,font=\small},
+ graph/.style={circle,draw=Teal,thick,fill=white,minimum size=9mm,font=\scriptsize},
+ tag/.style={font=\scriptsize,fill=white,inner sep=1.5pt},
+ }
+% Car rectangles are entirely editable in TikZ. #1 x, #2 y, #3 color,
+% #4 heading rotation in degrees, #5 label. Local +x is forward.
+\newcommand{\car}[5]{\begin{scope}[shift={(#1,#2)},rotate=#4]
+ \filldraw[fill=#3,draw=white,line width=.6pt,rounded corners=.035cm](-.25,-.12) rectangle (.25,.12);
+ \draw[white,line width=.8pt](.13,-.075)--(.13,.075);
+ \end{scope}\node[font=\scriptsize,text=white]at(#1,#2){#5};}
+\newcommand{\ghostcar}[4]{\begin{scope}[shift={(#1,#2)},rotate=#4]
+ \draw[draw=#3,line width=.8pt,rounded corners=.035cm](-.25,-.12) rectangle (.25,.12);
+ \end{scope}}
+% Lane IDs mean travel direction: NS is north to south (right-hand traffic).
+% EW lies at y=.38; WE lies at y=-.38. c1..c4 match all graphs/matrices.
+\newcommand{\roadbase}[1]{
+ \fill[Road](-.75,-2.05)rectangle(.75,2.05);
+ \ifnum#1=1\fill[Road](-2.7,.03)rectangle(2.7,.73);\else\fill[Road](-2.7,-.75)rectangle(2.7,.75);\fi
+ \draw[white,line width=1pt,dashed](0,-2.05)--(0,2.05);
+ \ifnum#1=2\draw[white,line width=1pt,dashed](-2.7,0)--(2.7,0);\fi
+ \draw[lane,Teal](-.38,1.95)--(-.38,-1.95);
+ \draw[lane,Blue](.38,-1.95)--(.38,1.95);
+ \draw[lane,Amber](2.6,.38)--(-2.6,.38);
+ \ifnum#1=2\draw[lane,Purple](-2.6,-.38)--(2.6,-.38);\fi
+ \node[tag,text=Teal,anchor=east]at(-.5,1.8){NS};
+ \node[tag,text=Blue,anchor=west]at(.5,-1.8){SN};
+ \node[tag,text=Amber,anchor=south]at(2.4,.55){EW};
+ \ifnum#1=2\node[tag,text=Purple,anchor=north]at(-2.4,-.55){WE};\fi
+}
+\newcommand{\conflicts}[1]{
+ \node[dot]at(-.38,.38){};\node[tag,anchor=south east]at(-.43,.47){$c_1$};
+ \node[dot]at(.38,.38){};\node[tag,anchor=south west]at(.43,.47){$c_2$};
+ \ifnum#1=2
+ \node[dot]at(-.38,-.38){};\node[tag,anchor=north east]at(-.43,-.47){$c_3$};
+ \node[dot]at(.38,-.38){};\node[tag,anchor=north west]at(.43,-.47){$c_4$};\fi
+}
+\newcommand{\graphA}{
+ \node[graph,draw=Teal](ns)at(0,1.1){NS};
+ \node[graph,draw=Blue](sn)at(0,-1.1){SN};
+ \node[graph,draw=Amber](ew)at(2.3,0){EW};
+ \draw[thick,Teal](ns)--node[tag]{$c_1$}(ew);
+ \draw[thick,Blue](sn)--node[tag]{$c_2$}(ew);
+}
+\newcommand{\graphB}{
+ \node[graph,draw=Teal](ns)at(0,1.1){NS};
+ \node[graph,draw=Blue](sn)at(0,-1.1){SN};
+ \node[graph,draw=Amber](ew)at(2.4,1.1){EW};
+ \node[graph,draw=Purple](we)at(2.4,-1.1){WE};
+ \draw[thick,Teal](ns)--node[tag]{$c_1$}(ew);
+ \draw[thick,Blue](sn)--node[tag]{$c_4$}(we);
+ \draw[thick,Amber](sn)--node[tag,pos=.28]{$c_2$}(ew);
+ \draw[thick,Purple](ns)--node[tag,pos=.28]{$c_3$}(we);
+}
+\hypersetup{pdftitle={\ifChinese 决策屏障框架\else Decision-Barrier Framework\fi},pdfsubject={Idea Note 2026-07-08; method explanation and proposed experiments},colorlinks=true,urlcolor=Teal}

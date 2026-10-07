@@ -1,0 +1,40 @@
+
+\subsection{FAS-Based Intersection Controller}
+\label{Adaptive Traffic Control System}
+The previously described barrier controller is evaluated against a traditional intersection management strategy, a signalized intersection controller. This controller implements a FAS, based on the Dutch CROW Handboek verkeerslichten-regelingen 2014 \parencite{wilson2014handboek}. The system uses Inductive Loop Detectors (ILD) to detect if an extension is necessary for improved traffic flow. The actuated controller is used for comparison to ensure that the baseline matches a situation, which is widely adopted in current traffic. The FAS is applied simultaneously to both sides of the conflict point, therefore this section only describes the setup for one side. It should be noted that all specific values used for the FAS controller are listed in the appendix, in table~\ref{tab:simulation_parameters}.
+
+\subsubsection{Stop Line and Loop Detector Layout}
+\label{Layout of FAS}
+The layout of the actuated controller, first requires definition of
+a stop line near the conflict point. The stop line serves as the point where vehicles must come to a complete stop during a red light. Next, two ILDs are defined upstream of the stop line. The first ILD, called the request loop, is placed directly from the stop line. The function of the ILD is to register if a phase switch is required, which is only required if a vehicle is waiting on a red light. The second ILD, called the discharge loop, is placed further upstream from the stop line and functions to detect if vehicles are still arriving during the green phase, which drives the gap-out logic described in section~\ref{Phase altering system}.
+
+\subsubsection{Deriving FAS Phase Durations}
+\label{Phase durations}
+With the detection layout in place, the phase durations that govern the FAS can now be derived from the formulas in \parencite{wilson2014handboek}. Four parameters are required: yellow-time \(t_\text{y}\)(s), minimum green-time \(t_\text{gmin}\)(s), maximum green-time \(t_\text{gmax}\)(s) and the gap-out threshold \(t_\text{go}\)(s). 
+\\\\
+The first parameter, \(t_\text{y}\), follows equation~\ref{Tyellow}\begin{equation}
+\label{Tyellow}
+    t_y=t_r+\frac{v_0}{2\times a_\text{off}},
+\end{equation} with the reaction time of the vehicle \(t_r\) (s),  the speed of the vehicle during the crossing \(v_0\) (m/s), and the braking deceleration \(a_\text{off} \ (m/s^2)\). The value of \(t_y\) is rounded up to the nearest integer, since it must always be greater than the calculated value, to ensure vehicles have sufficient time to cross the intersection, when reaching a complete stop at the stop line is not possible. 
+\\\\
+The second parameter, \(t_\text{gmin}\), follows equation~\ref{Tgmin} \begin{equation}
+\label{Tgmin}
+    t_\text{gmin}=\left(\frac{d_\text{loop}}{L_\text{veh}+d_\text{gap}}\right)\times t_\text{follow} -t_\text{ymax},
+\end{equation}
+with the distance to the upstream loop \(d_\text{loop}\)(m), the average length of the queuing vehicles \(L_\text{veh}\)(m), the inter-vehicle queue spacing \(d_\text{gap}\)(m), the average follow time during the first part of the green phase \(t_\text{follow}\)(s), and the maximum amount of yellow time that can be used for crossing  \(t_\text{ymax}\)(s). This formula ensures that, during the minimum green time, at least the vehicles stopped between the stop-line and discharge loop can cross the intersection.
+\\\\
+The third parameter, \(t_\text{gmax}\), represents the maximum time of the green phase. The parameter is used to ensure that no approach can dominate the intersection indefinitely. Within the CROW design guidelines, no standard formula is present for the derivation of \(t_\text{gmax}\). Nevertheless, the value should be chosen to ensure that, under normal traffic density, the value is almost never reached \parencite{wilson2014handboek}.
+\\\\
+The fourth parameter, \(t_\text{go}\), follows equation~\ref{eq Hiaat} 
+\begin{equation}
+\label{eq Hiaat}
+    t_\text{go} = t_\text{gap}-\frac{d_\text{loop}}{v_0},
+\end{equation}
+with the maximum allowed time gap between vehicles \(t_\text{gap}\)(s). The equation measures the time between the rear-end of a vehicle leaving the discharge loop and the front-end of the vehicle entering the discharge loop. By subtracting the occupancy time \(\left(\frac{d_\text{loop}}{v_0}\right)\), the system accounts for the actual gap between the vehicles. The derived value serves as the threshold for green phase extensions.  
+
+\subsubsection{Phase Transition and Gap Out Logic}
+\label{Phase altering system}
+The in the previous section derived phase durations are the basis for the transitioning between phases green, extended green, yellow and red of the actuated controller. \\\\
+The first phase, green, is equal to the minimum green time, \(t_\text{gmin}\). In this phase, the light is not allowed to switch to a different phase and also ignores the upstream loop detector for extension. Implying that during this phase, no phase extension can be requested.
+The next phase, extended green, utilizes the upstream loop detector to evaluate a potential green phase extension. This extension occurs only if the time clearance between the vehicle leaving the discharge loop and the vehicle entering the discharge loop, is below the derived gap-out threshold, \(t_\text{go}\). Upon meeting this condition, the green phase is extended by \(t_\text{go}\), which allows the vehicle sufficient time to cross the intersection from the upstream loop detector. This phase terminates under two scenarios: either the time clearance between vehicles exceeds \(t_\text{go}\), or the maximum allowable green time is exceeded, \(t_\text{gmax}\). However, an exception to the latter scenario occurs if no vehicle at the other approaching side is triggering the request loop from section~\ref{Layout of FAS}. In this scenario, the FAS is allowed to extend the green phase beyond \(t_\text{gmax}\), until a request is triggered. After termination, the green phase switches to the yellow phase, which spans \(t_\text{y}\). During this phase, vehicles that are not capable of stopping before the stop line, can still cross the intersection, and vehicles that are capable of stopping decelerate to a complete stop at the stop line. Lastly, the light switches to the red phase, which also switches the other approach to green. The duration of the red phase is equal to the total green and yellow time of the other approaching side. 
+

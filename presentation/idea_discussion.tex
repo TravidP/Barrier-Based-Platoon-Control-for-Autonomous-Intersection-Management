@@ -1,0 +1,328 @@
+% Compile: latexmk -xelatex -interaction=nonstopmode -halt-on-error idea_discussion.tex
+% 12 main slides + 4 backup slides. No external images or bibliography needed.
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{fix-cm}
+\usepackage{fontspec}
+\setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,
+  BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\usepackage{amsmath,amssymb,booktabs,array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\definecolor{Navy}{HTML}{15324F}
+\definecolor{Teal}{HTML}{007F82}
+\definecolor{Ink}{HTML}{243447}
+\definecolor{Muted}{HTML}{607080}
+\definecolor{Amber}{HTML}{A55B1B}
+\setbeamercolor{normal text}{fg=Ink,bg=white}
+\setbeamercolor{frametitle}{fg=Navy}
+\setbeamercolor{structure}{fg=Teal}
+\setbeamercolor{alerted text}{fg=Amber}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{footline}{size=\tiny}
+\setbeamersize{text margin left=9mm,text margin right=9mm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\color{Teal}\small\textbullet}
+\setbeamertemplate{itemize subitem}{\color{Teal}\tiny\textbullet}
+\setbeamertemplate{frametitle}{\vspace{3mm}\insertframetitle\par\vspace{1mm}}
+\setbeamertemplate{footline}{\hspace{9mm}\textcolor{Muted}{RESEARCH PROPOSAL\quad /\quad Intersection coordination}\hfill\textcolor{Muted}{\ifnum\value{framenumber}>12 Backup \number\numexpr\value{framenumber}-12\relax/4\else\insertframenumber/12\fi}\hspace{9mm}\vspace{3mm}}
+\newcommand{\source}[1]{\par\vspace{2mm}{\fontsize{6.5}{8}\selectfont\color{Muted}#1\par}}
+\newcommand{\lead}[1]{\par{\large\color{Teal}#1\par}\vspace{3mm}}
+\newcommand{\smallgap}{\par\vspace{2mm}}
+\newcommand{\refaim}{\href{https://www.cs.utexas.edu/~aim/papers/JAIR08-dresner.pdf}{[1] Dresner \& Stone, 2008}}
+\newcommand{\refcbf}{\href{https://authors.library.caltech.edu/records/jnhr0-1ww05}{[2] Ames et al., 2017}}
+\newcommand{\refsumo}{\href{https://sumo.dlr.de/docs/}{[3] Eclipse SUMO documentation}}
+\hypersetup{pdftitle={Barrier-Based Platoon Control for Autonomous Intersection Management},pdfsubject={Research proposal: crossing order and multi-conflict safety filtering},colorlinks=true,urlcolor=Teal}
+\begin{document}
+
+% 01 -- 35 s
+\begin{frame}[plain]
+\vspace{6mm}
+{\color{Teal}\small RESEARCH IDEA DISCUSSION\par}
+\vspace{5mm}
+{\color{Navy}\LARGE\bfseries Barrier-Based Platoon Control\par
+for Autonomous\par
+Intersection Management\par}
+\vspace{5mm}
+{\large Crossing-order decisions and multi-conflict safety filtering\par}
+\vspace{6mm}
+{\color{Muted}\small Open-road intersections\quad /\quad V2X or roadside coordination\par}
+\vspace{2mm}
+{\color{Amber}\small Proposal stage: method and experiments to be developed\par}
+\end{frame}
+
+% 02 -- 60 s
+\begin{frame}{The open-road coordination problem}
+\lead{Each new arrival can change who should cross first}
+\begin{columns}[T,onlytextwidth]
+\column{.47\textwidth}
+\textbf{Traffic interactions}
+\begin{itemize}\setlength\itemsep{2mm}
+\item Several streams approach the intersection.
+\item One vehicle can encounter more than one conflict region.
+\item Following vehicles also need safe longitudinal gaps.
+\end{itemize}
+\column{.47\textwidth}
+\textbf{Control objective}
+\begin{itemize}\setlength\itemsep{2mm}
+\item Coordinate crossing before vehicles enter the conflict regions.
+\item Preserve smooth motion when feasible.
+\item Evaluate delay and comfort under explicit safety constraints.
+\end{itemize}
+\end{columns}
+\source{Context: reservation-based AIM is established in \refaim. Performance benefits here remain hypotheses.}
+\end{frame}
+
+% 03 -- 75 s
+\begin{frame}{Starting point and research gap}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}P{.22\textwidth}P{.69\textwidth}@{}}
+\toprule
+\textbf{Evidence status} & \textbf{What it contributes}\\\midrule
+Verified literature & Reservation-based intersection coordination [1]; CBF constraints in optimization-based control [2].\\
+Current draft & Describes a figure-eight barrier controller and a BaIP CARLA evaluation. Original sources still need verification.\\
+Proposed extension & Open arrivals, directed movement conflicts, consistent crossing order and bounded acceleration.\\\bottomrule
+\end{tabular}\par
+\vspace{4mm}
+\lead{Can order-aware filtering handle multiple conflicts\linebreak without excessive stopping?}
+\source{\refaim; \refcbf. No numerical benefit or novelty claim is inferred from the unverified reports.}
+\end{frame}
+
+% 04 -- 75 s
+\begin{frame}{Research questions and potential contributions}
+\begin{enumerate}\setlength\itemsep{3mm}
+\item \textbf{Consistent decisions}\par
+Can one crossing order resolve interacting conflicts without repeated yielding?
+\item \textbf{Feasible safety constraints}\par
+Under what initial states and actuator limits can all constraints be satisfied?
+\item \textbf{Traffic performance}\par
+What delay and comfort costs accompany stricter safety enforcement?
+\end{enumerate}
+\vspace{3mm}
+{\color{Teal}Potential contribution: a carefully defined order/filter interface,\linebreak feasibility analysis and reproducible evaluation.}
+\source{A conflict graph or a CBF-QP alone is not claimed as a new contribution. Novelty requires a focused literature review.}
+\end{frame}
+
+% 05 -- 80 s
+\begin{frame}{Case A: three directed movements}
+\begin{columns}[T,onlytextwidth]
+\column{.49\textwidth}
+\textbf{Bidirectional road}
+\[\ell_1=N\!\to\!S,\qquad\ell_2=S\!\to\!N\]
+\textbf{Unidirectional road}
+\[\ell_3=E\!\to\!W\]
+\small Fixed straight paths; separate opposing lanes.\par
+\smallgap
+Finite vehicle footprints define conflict regions, with path-specific entry and exit positions.
+\column{.46\textwidth}
+\textbf{Movement conflict matrix}
+\[
+A=\begin{bmatrix}0&0&1\\0&0&1\\1&1&0\end{bmatrix}
+\]
+\small $A_{pq}=1$: movements share a conflict region.\par
+\smallgap
+Two local conflicts for $\ell_3$; no lateral conflict between $\ell_1$ and $\ell_2$. Same-lane rear-end safety is handled separately.
+\end{columns}
+\source{Proposed geometry, not experimental data. First study: all vehicles controlled, known routes, synchronized shared state.}
+\end{frame}
+
+% 06 -- 90 s
+\begin{frame}{Proposed control architecture}
+\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{@{}P{.25\textwidth}P{.67\textwidth}@{}}
+\toprule
+\textbf{Stage} & \textbf{Information or output}\\\midrule
+Shared state & Path position, speed, route, dimensions and timestamp.\\
+Conflict activation & Approaching and occupying vehicles; relevant movement pairs.\\
+Decision layer & One consistent precedence relation across conflict regions.\\
+Nominal control & Desired speed and same-lane headway acceleration $u_i^{\rm nom}$.\\
+Joint CBF-QP & Acceleration vector $\mathbf u$ satisfying active constraints, if feasible.\\
+Execution & Apply inputs; monitor occupancy, feasibility and actual response.\\\bottomrule
+\end{tabular}\par
+\vspace{3mm}
+{\color{Teal}First implementation: one roadside coordinator.}
+\source{Proposed architecture. Distributed control is deferred because pairwise constraints couple both vehicles' inputs.}
+\end{frame}
+
+% 07 -- 90 s
+\begin{frame}{Decision layer: a stable crossing order}
+\lead{Rank eligible vehicles, then keep committed decisions}
+\begin{itemize}\setlength\itemsep{2mm}
+\item Moving vehicles: rank by estimated arrival at the first relevant region. Near ties: approach-entry time, then vehicle ID.
+\item Preserve lane FIFO. Promote long-waiting vehicles only within the uncommitted set.
+\item Derive all conflict-pair precedences from one global order to avoid cyclic pairwise priorities.
+\item Freeze committed precedences until rear clearance. Admit a new order only after checking safety margins and feasibility.
+\end{itemize}
+\vspace{2mm}
+{\small\color{Amber}Acyclic priorities do not by themselves prove deadlock freedom.\linebreak Low-speed admission and infeasible orders need explicit handling.}
+\end{frame}
+
+% 08 -- 110 s
+\begin{frame}{Barrier layer: filter the nominal acceleration}
+\small For moving vehicles approaching region $m$, with $i$ before $j$:
+\[
+T_i^m=\frac{d_i^m}{v_i},\qquad
+h_{ij}^m=T_j^m-T_i^m-\tau_m
+\]
+\[
+\begin{aligned}
+\mathbf u^* =\arg\min_{\mathbf u}\;&\sum_i w_i(u_i-u_i^{\rm nom})^2\\
+\text{s.t.}\quad &\dot h_{ij}^m(\mathbf u)+\alpha h_{ij}^m\geq0
+\quad\text{for all active conflicting pairs},\\
+&u_{\min}\leq u_i\leq u_{\max},\qquad\text{plus speed and rear-end limits}.
+\end{aligned}
+\]
+\small $d_i^m$: path distance to a conflict reference point; $\tau_m$: proposed time gap.\par
+\smallgap
+\alert{Candidate formulation: arrival-time separation alone does not certify that vehicle occupancy intervals are disjoint.}
+\source{CBF-QP foundation: \refcbf. Requires $v_i,v_j>v_{\rm switch}>0$, fixed order and a feasible safe initial state.}
+\end{frame}
+
+% 09 -- 90 s
+\begin{frame}{Conditions that determine feasibility}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}P{.25\textwidth}P{.67\textwidth}@{}}
+\toprule
+\textbf{Issue} & \textbf{Required treatment}\\\midrule
+Low or zero speed & $d/v$ is unsuitable; use a stopping/admission mode with checked transitions.\\
+Finite occupancy & Track front entry and rear exit; retain conflicts until clearance.\\
+Bounded braking & Define a viable approach envelope and check simultaneous constraints.\\
+QP infeasibility & Log the event; trigger a validated backup when available. Do not silently soften safety constraints.\\
+Order and time steps & Check new safe-set membership at switches and motion between samples.\\\bottomrule
+\end{tabular}\par
+\vspace{3mm}
+{\color{Amber}Safety is a conditional research target, not an established result.}
+\end{frame}
+
+% 10 -- 90 s
+\begin{frame}{Experimental design}
+\begin{columns}[T,onlytextwidth]
+\column{.49\textwidth}
+\textbf{Comparisons}
+\small
+\begin{itemize}\setlength\itemsep{1.5mm}
+\item Actuated signal control.
+\item Unsignalized priority control.
+\item Original distance barrier, only in its supported setting.
+\item Fixed order vs. proposed order; heuristic vs. QP filtering.
+\end{itemize}
+\column{.47\textwidth}
+\textbf{Measurements}
+\small
+\begin{itemize}\setlength\itemsep{1.5mm}
+\item Collisions, occupancy overlap, minimum separation.
+\item Throughput, delay, unfinished trips.
+\item Stops, acceleration and jerk RMS.
+\item Deadlock, infeasibility and solve time.
+\end{itemize}
+\end{columns}
+\vspace{3mm}
+\small Matched arrivals and seeds across low, medium and high demand; include startup transients and asymmetric flows. Energy is conditional on a specified model.
+\source{Platform: \refsumo. Audit simulator safety interventions so that they do not conceal controller failures.}
+\end{frame}
+
+% 11 -- 65 s
+\begin{frame}{Milestones and completion criteria}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}P{.25\textwidth}P{.67\textwidth}@{}}
+\toprule
+\textbf{Milestone} & \textbf{Evidence required to advance}\\\midrule
+1. Model / baselines & Source audit, geometry, information assumptions and reproducible baseline runs.\\
+2. Minimal closed loop & Case A stress cases; checked input bounds, order transitions, occupancy and failure logs.\\
+3. Comparative study & Paired-seed comparisons, ablations, uncertainty estimates and reported adverse cases.\\
+4. Extension and limits & Bidirectional crossroad, then turns; delay/error sensitivity. Optional CARLA validation.\\\bottomrule
+\end{tabular}\par
+\vspace{3mm}
+{\color{Teal}Milestone-based progression; multi-intersection networks remain future work.}
+\end{frame}
+
+% 12 -- 40 s; total 900 s
+\begin{frame}{Questions for discussion}
+\begin{enumerate}\setlength\itemsep{5mm}
+\item \textbf{Contribution}\par
+Is the order/filter interface and feasibility analysis a strong enough core?
+\item \textbf{Theory target}\par
+Should the first result focus on a restricted safe operating domain or a richer occupancy-based formulation?
+\item \textbf{Scope}\par
+After Case A, should we prioritize turning movements or communication uncertainty?
+\end{enumerate}
+\end{frame}
+
+\pdfstringdefDisableCommands{\def\translate#1{#1}}
+\appendix
+% B1
+\begin{frame}{Backup 1: dynamics and the coupled constraint}
+\small Let $\dot d_i^m=-v_i$, $\dot v_i=u_i$. For positive speeds, fixed order and constant $\tau_m$:
+\[
+\dot T_i^m=-1-\frac{d_i^m}{v_i^2}u_i,\qquad
+\dot h_{ij}^m=\frac{d_i^m}{v_i^2}u_i-\frac{d_j^m}{v_j^2}u_j.
+\]
+\[
+\frac{d_i^m}{v_i^2}u_i-\frac{d_j^m}{v_j^2}u_j
++\alpha\left(\frac{d_j^m}{v_j}-\frac{d_i^m}{v_i}-\tau_m\right)\geq0.
+\]
+\small Same-lane candidate: $h_f=g_f-s_0-t_hv_f$, hence
+\[\dot h_f=v_{\rm lead}-v_f-t_hu_f.\]
+\small Continuous-time invariance needs valid CBF conditions, $h(0)\geq0$ and feasible inputs throughout. New orders, low-speed modes and sampled execution need separate arguments.
+\source{Independent algebra for this proposal; general invariance framework: \refcbf. $g_f$ is bumper gap; $t_h>0$.}
+\end{frame}
+
+% B2
+\begin{frame}{Backup 2: ordered and unordered margins}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}
+\textbf{Unordered margin}
+\[h=|T_i-T_j|-\tau\]
+\small Allows either order. The two safe branches are separated; the absolute value is nonsmooth at equal arrival times.
+\column{.48\textwidth}
+\textbf{Ordered margin}
+\[h=T_j-T_i-\tau\]
+\small Encodes $i$ before $j$. Switching order changes the safe set and requires an explicit admissibility check.
+\end{columns}
+\vspace{4mm}
+\small\textbf{Two heuristic pitfalls in the draft}\par
+\smallgap
+$\phi(h)=-1/h$ is singular at zero and changes sign for $h<0$.\par
+\smallgap
+For negative braking corrections, $\max(-3,-1)=-1$ selects weaker braking. Neither a sum nor an extremum automatically satisfies all safety constraints.
+\end{frame}
+
+% B3
+\begin{frame}{Backup 3: evaluation definitions}
+\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{@{}P{.23\textwidth}P{.69\textwidth}@{}}
+\toprule
+\textbf{Measure} & \textbf{Definition and reporting rule}\\\midrule
+Safety & Geometric contact/overlap; region occupancy overlap; minimum ordered margin. Report separately.\\
+Efficiency & Exits per hour; delay against same-route free flow, including departure delay; unfinished/uninserted vehicles.\\
+Comfort & Acceleration RMS (m/s$^2$), jerk RMS (m/s$^3$), stops per vehicle; report sampling interval.\\
+Liveness & Max waiting time; blocked demand with no crossing for 60 s is a deadlock flag for inspection.\\
+Feasibility & QP failure rate, backup activations, input violations; median and 95th-percentile solve time.\\
+Optional measures & Trajectory-based collision-time estimate, distinct from $d/v$; energy only with stated model and units.\\\bottomrule
+\end{tabular}\par
+\source{Proposed evaluation definitions. Simulator output interpretation: \href{https://sumo.dlr.de/docs/Simulation/Output/TripInfo.html}{SUMO TripInfo}; \href{https://sumo.dlr.de/docs/Simulation/Safety.html}{SUMO Safety}.}
+\end{frame}
+
+% B4
+\begin{frame}{Backup 4: verified sources and open provenance}
+\footnotesize
+\textbf{[1] K. Dresner and P. Stone (2008)}\par
+\emph{A Multiagent Approach to Autonomous Intersection Management}.\par
+JAIR 31, 591--656. \href{https://www.cs.utexas.edu/~aim/papers/JAIR08-dresner.pdf}{Author-hosted paper}.\par
+\smallgap
+\textbf{[2] A. D. Ames, X. Xu, J. W. Grizzle and P. Tabuada (2017)}\par
+\emph{Control Barrier Function Based Quadratic Programs for Safety Critical Systems}. IEEE TAC 62(8), 3861--3876.\par
+\href{https://authors.library.caltech.edu/records/jnhr0-1ww05}{Caltech record}; DOI: 10.1109/TAC.2016.2638961.\par
+\smallgap
+\textbf{[3] Eclipse SUMO documentation}\par
+\href{https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html}{TraCI vehicle control},
+\href{https://sumo.dlr.de/docs/Simulation/Safety.html}{safety},
+\href{https://sumo.dlr.de/docs/Simulation/Traffic_Lights.html}{traffic lights},
+\href{https://sumo.dlr.de/docs/Simulation/Output/TripInfo.html}{trip outputs}. Accessed 24 September 2026.\par
+\smallgap
+\alert{Open provenance:} figure-eight theory and BaIP report mentioned in the local draft. Original publications and quantitative claims remain unverified.
+\end{frame}
+\end{document}

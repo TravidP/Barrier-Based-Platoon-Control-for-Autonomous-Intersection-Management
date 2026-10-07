@@ -1,0 +1,64 @@
+\documentclass[12pt]{article} 
+
+% --- Margins ---
+\usepackage[a4paper, margin=0.98in]{geometry} 
+
+% --- Font and Alignment ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{XCharter} 
+
+% --- Spacing (Clean, Modern Look) ---
+\usepackage{setspace}
+\setstretch{1.15} % Nice, readable line spacing
+\usepackage{parskip} % Adds clean spacing between paragraphs instead of indents
+
+% --- Your Core Packages ---
+\usepackage{graphicx} 
+\usepackage{booktabs} 
+\usepackage{caption}
+\usepackage{tabularx} 
+\usepackage{array} 
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{subcaption} 
+\usepackage[export]{adjustbox} 
+
+% --- Citations & Bibliography (Harvard Style) ---
+% Using biblatex with 'authoryear' creates the Harvard style.
+% 'dashed=false' ensures author names aren't replaced with dashes if they appear multiple times.
+\usepackage[style=apa, backend=biber]{biblatex}
+
+% --- Hyperlinks (Properly connected to Citations) ---
+\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue, urlcolor=blue]{hyperref}
+% Link the bibliography database file (replace 'references.bib' with your file's name)
+\addbibresource{References.bib}
+\begin{document}
+
+\input{Titlepage}
+\input{Disclaimer}
+\newpage
+\input{Abstract}
+\newpage
+\tableofcontents
+\newpage
+\input{Abbreviations}
+\newpage
+\input{Introduction} 
+\newpage
+\input{System Overview}
+\newpage
+\input{Methodology}
+\newpage
+\input{Results}
+\newpage
+\input{Discussion}
+\newpage
+\input{Conclusion}
+\newpage
+\setlength{\bibitemsep}{0.5\baselineskip}
+\printbibliography[title={References}, heading=bibintoc]
+\newpage
+\input{Appendix}
+\end{document}
